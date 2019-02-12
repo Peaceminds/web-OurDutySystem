@@ -1,0 +1,697 @@
+{% extends "base.html" %} {% block main %}
+
+<!-- * Nav focus change * -->
+<script>
+
+  $(function () {
+
+    // * Nav Focus Change.
+    $(".nav li").filter(".active").removeClass("active")
+    $("#nav3").addClass("active")
+    $("#testBtn").click(function () {
+      $(".alert").removeClass("hide").delay(2000).fadeOut()
+    })
+
+    // * Get current year & init yearPicker.
+    var date = new Date()
+    var yearTmp = date.getFullYear()
+    var yearList = []
+    for (var i = 0; i < 6; i++) {
+      yearList.push(yearTmp)
+      yearTmp--
+    }
+    for (var i in yearList) {
+      $('.selectpicker').append("<option value=" + yearList[i] + ">" + "年份: " + yearList[i] + "</option>");
+    }
+
+    // * Generate weeks of a year.
+    var wks = [];
+    for (var i = 0; i <= 54; i++) {
+      wks.push(i);
+    };
+
+    // * Generate Empty charts
+    // - Chart 01 空表搭建
+    var chart01 = echarts.init(document.getElementById('chart01'));
+    var lineData = [46.2, 41.3, 39.5, 46.6, 52.1, 45.4, 49.1];
+    var barData = [10.03, 12.15, 11.11, 10.38, 19.26, 10.35, 11.28];
+    option01 = {
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: { type: 'shadow' }
+      },
+      legend: {
+        data: ['使用率(百分比)', '保障飞行架次(数字乘10)'],
+        textStyle: { color: '#999' }
+      },
+      xAxis: {
+        axisLine: { lineStyle: { color: '#999' } },
+        data: []
+      },
+      yAxis: {
+        splitLine: { show: false },
+        splitArea: { show: true },
+        axisLine: { lineStyle: { color: '#999' } }
+      },
+      tooltip: {
+        formatter: '第{b}周{a}: {c}'
+      },
+      series: [
+        {
+          name: '使用率(百分比)',
+          type: 'line',
+          smooth: true,
+          showAllSymbol: true,
+          symbol: 'emptyCircle',
+          symbolSize: 9,
+          lineStyle: {
+            color: '#999'
+          },
+          data: []
+        },
+        {
+          name: '保障飞行架次(数字乘10)',
+          type: 'bar',
+          barWidth: 10,
+          itemStyle: {
+            normal: {
+              barBorderRadius: 5,
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: '#14c8d4' }, { offset: 1, color: '#43eec6' }])
+            }
+          },
+          data: []
+        }
+      ]
+    };
+    chart01.setOption(option01);
+
+    // - Chart02 空表搭建
+    var chart02 = echarts.init(document.getElementById('chart02'));
+    var config02 = {
+      rotate: 90,
+      align: 'left',
+      verticalAlign: 'middle',
+      position: 'insideBottom',
+    };
+    var option02 = {
+      color: ['#4cabce', '#a0180d', '#ddd', '#191919', '#fccf2f'],
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: { type: 'shadow' }
+      },
+      legend: {
+        data: ['East', 'South', 'West', 'North', 'Middle']
+      },
+      tooltip: {
+        formatter: '第{b}周: 中断{c}次'
+      },
+      calculable: true,
+      xAxis: [{
+        axisLine: { lineStyle: { color: '#999' } },
+        type: 'category',
+        axisTick: { show: false },
+        data: wks
+      }],
+      yAxis: [{
+        axisLine: { lineStyle: { color: '#999' } },
+        type: 'value'
+      }],
+      dataZoom: [{
+        type: 'slider',
+        show: true,
+        xAxisIndex: [0],
+        start: 1,
+        end: 35
+      }],
+      series: [
+        {
+          name: 'East',
+          type: 'bar',
+          barGap: 0,
+          data: []
+        },
+        {
+          name: 'South',
+          type: 'bar',
+          data: []
+        },
+        {
+          name: 'West',
+          type: 'bar',
+          data: []
+        },
+        {
+          name: 'North',
+          type: 'bar',
+          data: []
+        },
+        {
+          name: 'Middle',
+          type: 'bar',
+          data: []
+        }
+      ]
+    };
+    chart02.setOption(option02);
+
+    // - Chart03 空表搭建
+    var chart03 = echarts.init(document.getElementById('chart03'));
+    var is03 = {
+      normal: {
+        label: { show: false },
+        labelLine: { show: false }
+      }
+    }
+    var option03 = {
+      backgroundColor: '#F3F3F3',
+      legend: {
+        top: '5%'
+      },
+      tooltip: {},
+      // dataset: {
+      //   source: [
+      //     { product: 'Matcha Latte', '2015': 43.3, '2016': 85.8, '2017': 93.7 },
+      //     { product: 'Milk Tea', '2015': 83.1, '2016': 73.4, '2017': 55.1 },
+      //     { product: 'Cheese Cocoa', '2015': 86.4, '2016': 65.2, '2017': 82.5 },
+      //     { product: 'Walnut Brownie', '2015': 69.1, '2016': 53.9, '2017': 39.1 },
+      //     { product: 'Pie', '2015': 66.6, '2016': 53.9, '2017': 39.1 },
+      //     { product: 'Coke', '2015': 32.3, '2016': 53.9, '2017': 55.1 }
+      //   ]
+      // },
+      series: [
+        // pie 01
+        {
+          type: 'pie',
+          radius: 80,
+          center: ['12%', '50%'],
+          encode: {
+            itemName: 'product'
+          },
+          itemStyle: {
+            normal: {
+              label: { show: true },
+              labelLine: { show: true }
+            }
+          }
+        },
+        // pie 02
+        {
+          type: 'pie',
+          radius: 50,
+          center: ['30%', '50%'],
+          encode: {
+            itemName: 'product'
+          },
+          itemStyle: is03
+        },
+        // pie 03
+        {
+          type: 'pie',
+          radius: 50,
+          center: ['45%', '50%'],
+          encode: {
+            itemName: 'product'
+          },
+          itemStyle: is03
+        },
+        // pie 04
+        {
+          type: 'pie',
+          radius: 50,
+          center: ['60%', '50%'],
+          encode: {
+            itemName: 'product'
+          },
+          itemStyle: is03
+        },
+        // pie 05
+        {
+          type: 'pie',
+          radius: 50,
+          center: ['75%', '50%'],
+          encode: {
+            itemName: 'product'
+          },
+          itemStyle: is03
+        },
+        // pie 06
+        {
+          type: 'pie',
+          radius: 50,
+          center: ['90%', '50%'],
+          encode: {
+            itemName: 'product'
+          },
+          itemStyle: is03
+        }
+      ]
+    };
+    chart03.setOption(option03);
+
+    // - Chart04 空表搭建
+    var chart04 = echarts.init(document.getElementById('chart04'));
+    option04 = {
+      title: [
+        {
+          text: 'Score',
+          left: '25%',
+          top: '1%',
+          textAlign: 'center'
+        },
+        {
+          text: 'Virus',
+          left: '73%',
+          top: '1%',
+          textAlign: 'center'
+        }
+      ],
+      grid: [
+        { x: '7%', y: '20%', width: '38%', height: '70%' },
+        { x2: '7%', y: '20%', width: '38%', height: '70%' }
+      ],
+      tooltip: {
+        formatter: '第{b}周{a}: {c}'
+      },
+      xAxis: [
+        {
+          gridIndex: 0,
+          data: wks,
+          splitLine: { show: false }
+        },
+        {
+          gridIndex: 1,
+          data: wks,
+          splitLine: { show: false }
+        },
+      ],
+      yAxis: [
+        {
+          gridIndex: 0,
+          min: 30, max: 100,
+          splitArea: { show: true },
+          splitLine: { show: false }
+        },
+        {
+          gridIndex: 1,
+          splitArea: { show: true },
+          splitLine: { show: false },
+          type: 'value'
+        },
+      ],
+      series: [
+        {
+          name: '分数',
+          type: 'line',
+          smooth: true,
+          data: []
+        },
+        {
+          name: '病毒事',
+          type: 'bar',
+          barGap: 0,
+          barWidth: 3,
+          xAxisIndex: 1,
+          yAxisIndex: 1,
+          data: []
+        }
+      ]
+    };
+    chart04.setOption(option04);
+
+    // - Chart05 空表搭建
+    var chart05 = echarts.init(document.getElementById('chart05'));
+    option05 = {
+      title: [
+        {
+          text: 'Text',
+          left: '25%',
+          top: '1%',
+          textAlign: 'center'
+        },
+        {
+          text: 'IP',
+          left: '73%',
+          top: '1%',
+          textAlign: 'center'
+        },
+        {
+          text: 'Voice',
+          left: '25%',
+          top: '49%',
+          textAlign: 'center'
+        },
+        {
+          text: 'Satel',
+          left: '73%',
+          top: '49%',
+          textAlign: 'center'
+        }
+      ],
+      grid: [
+        { x: '7%', y: '7%', width: '38%', height: '38%' },
+        { x2: '7%', y: '7%', width: '38%', height: '38%' },
+        { x: '7%', y2: '7%', width: '38%', height: '38%' },
+        { x2: '7%', y2: '7%', width: '38%', height: '38%' }
+      ],
+      tooltip: {
+        formatter: '第{b}周: {c}%'
+      },
+      xAxis: [
+        { gridIndex: 0, data: wks, axisLine: { lineStyle: { color: '#999' } }},
+        { gridIndex: 1, data: wks, axisLine: { lineStyle: { color: '#999' } }},
+        { gridIndex: 2, data: wks, axisLine: { lineStyle: { color: '#999' } }},
+        { gridIndex: 3, data: wks, axisLine: { lineStyle: { color: '#999' } }}
+      ],
+      yAxis: [
+        { gridIndex: 0, axisLine: { lineStyle: { color: '#999' } }},
+        { gridIndex: 1, axisLine: { lineStyle: { color: '#999' } }},
+        { gridIndex: 2, axisLine: { lineStyle: { color: '#999' } }},
+        { gridIndex: 3, axisLine: { lineStyle: { color: '#999' } }}
+      ],
+      series: [
+        {
+          xAxisIndex: 0,
+          yAxisIndex: 0,
+          name: 'Text',
+          type: 'bar',
+          barWidth: 2,
+          data: []
+        },
+        {
+          xAxisIndex: 1,
+          yAxisIndex: 1,
+          name: 'IP',
+          type: 'bar',
+          barWidth: 2,
+          data: []
+        },
+        {
+          xAxisIndex: 2,
+          yAxisIndex: 2,
+          name: 'Voice',
+          type: 'bar',
+          barWidth: 2,
+          data: []
+        },
+        {
+          xAxisIndex: 3,
+          yAxisIndex: 3,
+          name: 'Satel',
+          type: 'bar',
+          barWidth: 2,
+          data: []
+        }
+      ]
+    };
+    chart05.setOption(option05);
+
+    // - Chart06 空表搭建
+    var chart06 = echarts.init(document.getElementById('chart06'));
+    option06 = {
+      title: {
+        text: 'Video',
+        left: '25%',
+        top: '-3.5%',
+      },
+      grid: [
+        { x: '7%', y: '7%', width: '38%', height: '76%' }
+      ],
+      tooltip: {
+        formatter: '第{b}周: {c}%'
+      },
+      xAxis: [
+        {
+          axisLine: { lineStyle: { color: '#999' } },
+          gridIndex: 0,
+          data: wks
+        }
+      ],
+      yAxis: [
+        {
+          axisLine: { lineStyle: { color: '#999' }},
+          gridIndex: 0
+        }
+      ],
+      series: [
+        {
+          xAxisIndex: 0,
+          yAxisIndex: 0,
+          name: 'Video',
+          type: 'bar',
+          barWidth: 2,
+          label: {
+            normal: {
+              show: false,
+              textStyle: { fontSize: 10 },
+              rotate: 90
+            }
+          },
+          data: []
+        }
+      ]
+    };
+    chart06.setOption(option06);
+
+    // * Async dataset requests for all of the charts.  注意：下列表格排序按数据获取顺序。即 chart01,04,05,06; chart02,03
+    // - First time request, filtered by yearList[0].
+    refreshChartsPartOne(yearList[0]);
+    refreshChartsPartTwo(yearList[0]);
+
+    // - New request, triggered by the changes of yearPicker.
+    $("#yearPicker").change(function () {
+      var y = $("#yearPicker").val();
+      refreshChartsPartOne(y);
+      refreshChartsPartTwo(y);
+    })
+
+    // - Async request 01 ======> api/davi/weeklysdataset
+    function refreshChartsPartOne(yyyy) {
+      chart01.showLoading();
+      chart04.showLoading();
+      chart05.showLoading();
+      chart06.showLoading();
+      $.get("/api/davi/weeklysdataset?year=" + yyyy).done(function (data) {
+        chart01.hideLoading();
+        chart04.hideLoading();
+        chart05.hideLoading();
+        chart06.hideLoading();
+        console.log("~~~~~~~~~~~~~~~~~~" + JSON.stringify(data.wds))
+        var flightHundredList = data.wds.flightList
+        for (var i in flightHundredList) {
+          flightHundredList[i] = flightHundredList[i] / 10
+        }
+        // chart 01 data
+        chart01.setOption({
+          xAxis: { data: data.wds.weekList },
+          series:
+            [{
+              name: '使用率(百分比)',
+              data: data.wds.usageRateList
+            },
+            {
+              name: '保障飞行架次(数字乘10)',
+              data: flightHundredList
+            }]
+        });
+        // chart 04 data
+        chart04.setOption({
+          xAxis: [{
+            gridIndex: 0,
+            data: data.wds.weekList
+          },
+          {
+            gridIndex: 1,
+            data: data.wds.weekList
+          }],
+          series:
+            [{
+              name: '分数',
+              data: data.wds.secureScoresList
+            },
+            {
+              name: '病毒事',
+              data: data.wds.virusCasesList
+            }]
+        });
+        // chart 05 data
+        chart05.setOption({
+          xAxis: [
+            { gridIndex: 0, data: data.wds.weekList },
+            { gridIndex: 1, data: data.wds.weekList },
+            { gridIndex: 2, data: data.wds.weekList },
+            { gridIndex: 3, data: data.wds.weekList }
+          ],
+          series:
+            [{
+              name: 'Text',
+              data: data.wds.textDutyList
+            },
+            {
+              name: 'IP',
+              data: data.wds.ipDutyList
+            },
+            {
+              name: 'Voice',
+              data: data.wds.voiceDutyList
+            },
+            {
+              name: 'Satel',
+              data: data.wds.satelliteDutyList
+            }]
+        });
+        // chart 06 data
+        chart06.setOption({
+          xAxis: { data: data.wds.weekList },
+          series:
+            [{
+              name: 'Video',
+              data: data.wds.videoDutyList
+            }]
+        })
+      }).fail(function (jqXHR, textStatus) {
+        alert('Error: ' + jqXHR.status)
+      });
+    }
+
+    // - Async request 02 ======> api/davi/casesdataset
+    function refreshChartsPartTwo(yyyy) {
+      chart02.showLoading();
+      chart03.showLoading();
+      $.get("/api/davi/casesdataset?year=" + yyyy).done(function (data) {
+        chart02.hideLoading();
+        chart03.hideLoading();
+        // chart 02 data
+        chart02.setOption({
+          xAxis: {
+            data: data.cds.weekList
+          },
+          series:
+            [{
+              name: 'East',
+              data: data.cds.csDataset.EAST
+            }, {
+              name: 'South',
+              data: data.cds.csDataset.SOUTH
+            }, {
+              name: 'West',
+              data: data.cds.csDataset.WEST
+            }, {
+              name: 'North',
+              data: data.cds.csDataset.NORTH
+            }, {
+              name: 'Middle',
+              data: data.cds.csDataset.MIDDLE
+            }]
+        });
+        // chart 03 data
+        chart03.setOption({
+          series:
+            [{
+              name: '总数量',
+              // data: data.cds.csPieDataset.pieTOTAL
+              data: Object.keys(data.cds.csPieDataset.pieTOTAL).map(function (key) {
+                return {
+                  name: key,
+                  value: data.cds.csPieDataset.pieTOTAL[key]
+                }
+              })
+            }, {
+              name: '东',
+              data: Object.keys(data.cds.csPieDataset.pieEAST).map(function (key) {
+                return {
+                  name: key,
+                  value: data.cds.csPieDataset.pieEAST[key]
+                }
+              })
+            }, {
+              name: '南',
+              data: Object.keys(data.cds.csPieDataset.pieSOUTH).map(function (key) {
+                return {
+                  name: key,
+                  value: data.cds.csPieDataset.pieSOUTH[key]
+                }
+              })
+            }, {
+              name: '西',
+              data: Object.keys(data.cds.csPieDataset.pieWEST).map(function (key) {
+                return {
+                  name: key,
+                  value: data.cds.csPieDataset.pieWEST[key]
+                }
+              })
+            }, {
+              name: '北',
+              data: Object.keys(data.cds.csPieDataset.pieNORTH).map(function (key) {
+                return {
+                  name: key,
+                  value: data.cds.csPieDataset.pieNORTH[key]
+                }
+              })
+            }, {
+              name: '中',
+              data: Object.keys(data.cds.csPieDataset.pieMIDDLE).map(function (key) {
+                return {
+                  name: key,
+                  value: data.cds.csPieDataset.pieMIDDLE[key]
+                }
+              })
+            }]
+        });
+      }).fail(function (jqXHR, textStatus) {
+        alert('Error: ' + jqXHR.status)
+      });
+    }
+
+  })
+
+</script>
+
+
+<div class="container">
+
+  <div class="col-xs-4 col-md-2">
+    <!-- <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            当前年份:
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu">
+            <li v-for="y in years">
+              <a href="#" @click="changeYear(y)" v-text="y"></a>
+            </li>
+          </ul> -->
+    <select id="yearPicker" class="form-control selectpicker" data-live-search="true"></select>
+  </div>
+
+  <div class="col-xs-12">
+    <h2>链使用情况</h2>
+    <div id="chart01" style="width:960px;height:360px;"></div>
+  </div>
+
+  <div class="col-xs-12 div-blank-bottom-lg">
+    <h2>系统中断统计</h2>
+    <div id="chart02" style="width:960px;height:400px; padding-top: 15px"></div>
+  </div>
+
+  <div class="div-blank-bottom-lg">&nbsp;</div>
+
+  <div class="col-xs-12 div-blank-bottom">
+    <h2>中断类型统计</h2>
+    <div id="chart03" style="width:1080px;height:300px;"></div>
+  </div>
+
+  <div class="col-xs-12">
+    <h2>Sec事件统计</h2>
+    <div id="chart04" style="width:960px;height:440px;"></div>
+  </div>
+
+  <div class="col-xs-12">
+    <h2>呼情况统计</h2>
+    <div id="chart05" style="width:960px;height:400px;"></div>
+    <div id="chart06" style="width:960px;height:220px;"></div>
+  </div>
+
+  <div style="margin-bottom: 50px;">&nbsp;</div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,56 @@
+.tree-box {
+  padding: 10px 25px;
+  padding-left: 35px;
+  padding-top: 20px;
+  height: 100%;
+  overflow: hidden;
+  overflow-y: auto;
+  min-height: 220px;
+  max-width: 410px;
+  background-color: #dddddd;
+}
+.tree-box .ellipsis {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.tree-box p {
+  padding: 0;
+  margin: 0;
+}
+.tree-box .tree-ul {
+  padding-left: 20px !important;
+}
+.tree-box .tree-ul:first-child {
+  padding-left: 0 !important;
+}
+.tree-box .folder, .tree-box .node {
+  cursor: pointer;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.tree-box .folder-box {
+  cursor: pointer;
+}
+.tree-box .folder-logo {
+  display: inline-block;
+  width: 12px;
+  height: 11px;
+  line-height: 7px;
+  font-weight: 400;
+  border: 1px solid #8e7878;
+  color: #000;
+  background: rgba(91, 192, 222, 0.1);
+  text-align: center;
+  float: left;
+  margin-left: -15px;
+  margin-top: 6px;
+  margin-right: 5px;
+}
+.tree-box .folder-true {
+  color: #2494f2;
+}
+.tree-box .node-true {
+  color: #2494f2;
+}

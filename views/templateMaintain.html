@@ -1,0 +1,220 @@
+{% extends "base.html" %} {% block main %}
+
+<!-- * Nav focus change * -->
+<script>
+
+  $(function () {
+    $(".nav li").filter(".active").removeClass("active")
+    $("#nav4").addClass("active")
+    $("#testBtn").click(function () {
+      $(".alert").removeClass("hide").delay(2000).fadeOut()
+    })
+  })
+
+  $.getJSON('/api/templates').done(function (data) {
+    var templatesList = data.templatesList;
+    console.log(JSON.stringify(templatesList))
+    activeVue(templatesList);
+  }).fail(function (jqXHR, textStatus) {
+    alert('模板获取失败! Error: ' + jqXHR.status)
+  })
+
+  function activeVue(tpl) {
+    var vm = new Vue({
+      el: '#tmp-container',
+      created: function () {
+        this.templatesList = tpl
+        this.wkGeneralTmp = tpl[0].wkGeneral
+        this.wkIntelSysSummaryTmp = tpl[0].wkIntelSysSummary
+        this.wkLinkSysSummaryTmp = tpl[0].wkLinkSysSummary
+        this.wkSecSummaryTmp = tpl[0].wkSecSummary
+        this.wkDutyCheckSummaryTmp = tpl[0].wkDutyCheckSummary
+        this.wkHeavyDutySummaryTmp = tpl[0].wkHeavyDutySummary
+      },
+      mounted: function () {
+      },
+      data: {
+        templatesList: [],
+        wkGeneralTmp: '',
+        wkIntelSysSummaryTmp: '',
+        wkLinkSysSummaryTmp: '',
+        wkSecSummaryTmp: '',
+        wkDutyCheckSummaryTmp: '',
+        wkHeavyDutySummaryTmp: ''
+      },
+      methods: {
+        modTmp01: function () {
+          this.modifyTempate("wkGeneral", this.wkGeneralTmp)
+        },
+        modTmp02: function () {
+          this.modifyTempate("wkIntelSysSummary", this.wkIntelSysSummaryTmp)
+        },
+        modTmp03: function () {
+          this.modifyTempate("wkLinkSysSummary", this.wkLinkSysSummaryTmp)
+        },
+        modTmp04: function () {
+          this.modifyTempate("wkSecSummary", this.wkSecSummaryTmp)
+        },
+        modTmp05: function () {
+          this.modifyTempate("wkDutyCheckSummary", this.wkDutyCheckSummaryTmp)
+        },
+        modTmp06: function () {
+          this.modifyTempate("wkHeavyDutySummary", this.wkHeavyDutySummaryTmp)
+        },
+        modifyTempate: function (templateName, templateText) {
+          // 注意：在url中使用字符串发送get请求时 百分号、空格等符号都会被转义！所以get并没有post方便
+          // $.getJSON('/api/templatemaintain?tn=' + templateName + "&tt=" + templateText).done(function (data) {
+          //   window.$('#myModal').modal()
+          // }).fail(function (jqXHR, textStatus) {
+          //   alert('模板更新失败! Error: ' + jqXHR.status)
+          // })
+          var obj = {}
+          obj.tn = templateName
+          obj.tt = templateText
+          $.ajax({
+            type: 'post',
+            dataType: 'json',
+            contentType: 'application/json',
+            url: '/api/templatemaintain',
+            data: JSON.stringify(obj)
+          })
+            .done(function (r) {
+              window.$('#myModal').modal()
+            })
+            .fail(function (jqXHR, textStatus) {
+              alert('模板更新失败! Error: ' + jqXHR.status)
+            })
+        },
+        backToHome: function () {
+          location.href = "/"
+        }
+      }
+    })
+  }
+</script>
+
+<div id="tmp-container" class="container">
+
+  <!-- * Title area * -->
+  <div class="row div-blank-bottom">
+    <div class="col-xs-12">
+      <h2>模板维护</h2>
+    </div>
+  </div>
+
+  <!-- * Template maintain area * -->
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="panel panel-warning">
+        <div class="panel-heading">
+          <h4 class="panel-title">
+            <span class="glyphicon glyphicon-flag"> 模板列表</span>
+          </h4>
+        </div>
+
+        <div class="panel-body">
+          <!-- * Form 01 * -->
+          <form class="div-blank-bottom">
+            <h4>系统总体情况</h4>
+            <textarea class="form-control" rows="5" v-model="wkGeneralTmp"></textarea>
+            <div id="testBtn" class="btn-group submit-btn">
+              <button type="button" class="btn btn-info btn-sm" @click="modTmp01">
+                提交内容
+              </button>
+              <!-- <button type="button" class="btn btn-danger btn-sm">
+                隐藏此栏
+              </button> -->
+            </div>
+            <!-- <div class="alert hide alert-warning alert-dismissible" aria-hidden="true" role="alert">
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+              <strong>Warning!</strong> Better check yourself, you're not looking too good.
+            </div> -->
+          </form>
+          <!-- * Form 02 * -->
+          <form class="div-blank-bottom">
+            <h4 class="div-blank-upabt-lg">intelSys情况</h4>
+            <textarea class="form-control" rows="5" v-model="wkIntelSysSummaryTmp"></textarea>
+            <div class="btn-group submit-btn">
+              <button type="button" class="btn btn-info btn-sm" @click="modTmp02">
+                提交内容
+              </button>
+            </div>
+          </form>
+          <!-- * Form 03 * -->
+          <form class="div-blank-bottom">
+            <h4 class="div-blank-upabt-lg">linkSys情况</h4>
+            <textarea class="form-control" rows="5" v-model="wkLinkSysSummaryTmp"></textarea>
+            <div class="btn-group submit-btn">
+              <button type="button" class="btn btn-info btn-sm" @click="modTmp03">
+                提交内容
+              </button>
+            </div>
+          </form>
+          <!-- * Form 04 * -->
+          <form class="div-blank-bottom">
+            <h4 class="div-blank-upabt-lg">secSys情况</h4>
+            <textarea class="form-control" rows="5" v-model="wkSecSummaryTmp"></textarea>
+            <div class="btn-group submit-btn">
+              <button type="button" class="btn btn-info btn-sm" @click="modTmp04">
+                提交内容
+              </button>
+            </div>
+          </form>
+          <!-- * Form 05 * -->
+          <form class="div-blank-bottom">
+            <h4 class="div-blank-upabt-lg">dutySys情况</h4>
+            <textarea class="form-control" rows="5" v-model="wkDutyCheckSummaryTmp"></textarea>
+            <div class="btn-group submit-btn">
+              <button type="button" class="btn btn-info btn-sm" @click="modTmp05">
+                提交内容
+              </button>
+            </div>
+          </form>
+          <!-- * Form 06 * -->
+          <form class="div-blank-bottom">
+            <h4 class="div-blank-upabt-lg">heavyDutySys情况</h4>
+            <textarea class="form-control" rows="5" v-model="wkHeavyDutySummaryTmp"></textarea>
+            <div class="btn-group submit-btn">
+              <button type="button" class="btn btn-info btn-sm" @click="modTmp06">
+                提交内容
+              </button>
+            </div>
+          </form>
+        </div>
+        <!-- Panel ending -->
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+            &times;
+          </button>
+          <h4 class="modal-title" id="myModalLabel">
+            模板修改成功
+          </h4>
+        </div>
+        <div class="modal-body">
+          <h5>模板修改已提交!</h5>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">
+            留在当前页
+          </button>
+          <button type="button" class="btn btn-primary" data-dismiss="modal" @click="backToHome">
+            返回首页
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+</div>
+
+{% endblock %}

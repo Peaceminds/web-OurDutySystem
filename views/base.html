@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="Our weekly system">
+    <title>{{ title }}</title>
+    <link rel="shortcut icon" href="/static/favicon.ico" />
+    <link rel="stylesheet" href="/static/css/bootstrap.css">
+    <link rel="stylesheet" href="/static/css/project.css">
+    <link rel="stylesheet" href="/static/css/navbar.css">
+    <link rel="stylesheet" href="/static/css/fullcalendar.css"/>
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/bootstrap.js"></script>
+    <script src="/static/js/vue.js"></script>
+    <script src="/static/js/echarts.min.js"></script>
+    <script src="/static/js/moment.min.js"></script>
+    <script src="/static/js/jquery-ui.min.js"></script>
+    <script src="/static/js/fullcalendar.js"></script>
+    <script src="/static/js/zh-cn.js"></script>
+    <!-- <script type="module" src="/static/js/impo.js"></script> -->
+</head>
+
+<body class="body_bottom">
+    <header class="navbar navbar-static-top">
+        <div class="container">
+            <!-- Static navbar -->
+            <nav class="navbar navbar-default">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false"
+                            aria-controls="navbar">
+                            <span class="sr-only">为您导航</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand" href="/">weSYS</a>
+                    </div>
+                    <div id="navbar" class="navbar-collapse collapse" aria-expanded="false" style="height: 1px;">
+                        <ul class="nav navbar-nav">
+                            <li id="nav1" class="active">
+                                <a href="/">周报一览</a>
+                            </li>
+                            <li id="nav2">
+                                <a href="/divisions">数据管理</a>
+                            </li>
+                            <li id="nav3">
+                                <a href="/visonary">历史图表</a>
+                            </li>
+                            <li id="nav4">
+                                <a href="/templateMaintain">模板变更</a>
+                            </li>
+                            <li id="nav5">
+                                <a href="/scheduling">交班排班</a>
+                            </li>
+                        </ul>
+                        <ul class="nav navbar-nav navbar-right">
+                            <li>
+                                <a href="/signout">注销</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <!--/.nav-collapse -->
+                </div>
+                <!--/.container-fluid -->
+            </nav>
+
+        </div>
+    </header>
+
+    <script>
+        $(function () {
+            var browserCodeName = window.navigator.appCodeName;
+            var browserName = window.navigator.appName;
+            var browserVer = window.navigator.appVersion;
+            var verStr = browserVer.substring(0,2);
+            var verVal = parseFloat(verStr);
+            if (verVal === NaN) {
+                verVal = 0;
+            }
+            if (browserName === 'Microsoft Internet Explorer' || verVal < 5) {
+                window.location.href = "/unsupported";
+            };
+        });
+    </script>
+
+    <!-- Main Content -->
+    {% block main %} {% endblock %}
+
+    <!-- Footer -->
+    <footer style="background-color:#ddd; padding: 20px 0; margin-top: 20px">
+        <div class="container">
+            <p>
+                <a>Website</a> -
+                <a>GitHub</a> -
+                <a target="_blank" href="http://weibo.com/aimc">Weibo</a>
+            </p>
+            <p>weSYS is created by
+                <a target="_blank" href="http://weibo.com/aimc">@思想先進元素</a>.</p>
+            <p>Code licensed
+                <a>Apache</a>.</p>
+        </div>
+    </footer>
+
+</body>
+
+</html>

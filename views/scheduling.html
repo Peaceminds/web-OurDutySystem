@@ -1,0 +1,252 @@
+{% extends "base.html" %} {% block main %}
+
+<!-- *** Vue Data, Methods *** -->
+<script>
+
+  $(function () {
+
+    // * Nav Focus Change.
+    $(".nav li").filter(".active").removeClass("active");
+    $("#nav5").addClass("active");
+
+    // * Global variables.
+    var eid = ""
+    var holidaysList = []
+    var staff = ["R哥", "BB", "MWK", "CC", "JJ"]
+    var dutyList = []
+    var statistics = {
+      "R哥": 4,
+      "BB": 3,
+      "MWK": 3,
+      "CC": 4,
+      "JJ": 4
+    }
+    var simDutyList = [
+      {
+        title: 'R哥',
+        start: '2018-11-01',
+      },
+      {
+        title: 'BB',
+        start: '2018-11-02',
+      },
+      {
+        title: 'JJ',
+        start: '2018-11-03',
+      }
+    ]
+
+    // * Data requests.
+    // Coding...
+    function initAll() {
+      createStaffList();
+      refreshStatisticsList();
+    }
+    initAll();
+
+    // * Staff & Statistics data initialization.
+    function createStaffList() {
+      for (var i in staff) {
+        console.log("csl________01")
+        var staffDiv = $('<div></div>');
+        staffDiv.addClass("fc-event fcbox");
+        staffDiv.html(staff[i]);
+        $("#staffList").append(staffDiv);
+      }
+    }
+    function refreshDutyList() {
+
+    }
+    function refreshStatisticsList() {
+      // $("#statisticsList").empty();
+      for (var i in statistics) {
+        console.log("csl________02")
+        var statisticsLi = $("<li></li>");
+        statisticsLi.html(i + ":   " + "&nbsp;" + statistics[i]);
+        $("#statisticsList").append(statisticsLi);
+      }
+    }
+
+    // * fullCalendar events format.
+    $(".fc-event").each(function () {
+      // store data so the calendar knows to render an event upon drop
+      $(this).data('event', {
+        title: $.trim($(this).text()), // use the element's text as the event title
+        stick: true // maintain when user navigates (see docs on the renderEvent method)
+      });
+      // make the event draggable using jQuery UI
+      $(this).draggable({
+        zIndex: 999,
+        revert: true,      // will cause the event to go back to its
+        revertDuration: 0  //  original position after the drag
+      });
+    });
+
+    // * fullCalendar config.
+    $('#calendar').fullCalendar({
+      header: {
+        right: 'prev,next today'
+      },
+      locale: 'es',
+      defaultDate: '2018-11-11',
+      navLinks: true, // can click day/week names to navigate views
+      businessHours: true, // display business hours
+      editable: true,
+      selectable: true,
+      unselectAuto: false,
+      droppable: true, // this allows things to be dropped onto the calendar
+      events: simDutyList,
+      drop: function (date, jsEvent, ui, resourceId) {
+
+      },
+      eventDrop: function (event, delta) {
+        console.log(event.start.format());
+        event.start._i = event.start.format()
+        $('#calendar').fullCalendar('updateEvent', event);
+        var es = $('#calendar').fullCalendar('clientEvents');
+        es[2].start._i = event.start.format();
+        console.log(es)
+      },
+      eventClick: function (calEvent, jsEvent, view) {
+        eid = calEvent._id
+        $('#selectedEventId').val(calEvent._id)
+        $('#selectedName').html(calEvent.title)
+        $('#selectedDate').html(calEvent.start._i)
+        var modal = $('#myModal')
+        modal.modal("show")
+      },
+      dayClick: function (date, jsEvent, view) {
+        console.log("this========")
+        console.log(this)
+        var d = date.format();
+        if (holidaysList == false) {
+          holidaysList.push(d);
+          $(this).css('background-color', '#E2EFDB');
+        } else {
+          var i = holidaysList.indexOf(d);
+          if (i > -1) {
+            holidaysList.splice(i, 1);
+            $(this).css('background-color', '');
+          } else {
+            holidaysList.push(d);
+            $(this).css('background-color', '#E2EFDB');
+          }
+        };
+        holidaysList.sort(function (a, b) {
+          return a - b;
+        });
+        console.log("holidaysList: " + holidaysList);
+      }
+    });
+
+    $("#oneKeyDutySwitch").click(function () {
+      var calendar = $('#calendar').fullCalendar('getCalendar');
+      let date = []
+      date.push(calendar.moment().subtract('days', 30).format('YYYY-MM-DD'))
+      date.push(calendar.moment().subtract('days', 1).format('YYYY-MM-DD'))
+      console.log(date)
+    });
+
+    // * Functions of modal.
+    $("#modalDelBtn").click(function () {
+      $('#calendar').fullCalendar('removeEvents', eid);
+      var a1 = $('#calendar').fullCalendar()
+      $('#myModal').modal("hide");
+      console.log("Event has been deleted!!!")
+    });
+
+  })
+
+</script>
+
+
+
+<div class="container">
+
+  <!-- *** Duty Switch *** -->
+  <div class="row div-blank-bottom">
+    <div class="col-xs-12">
+      <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+        aria-expanded="false">
+        值班类别
+        <span class="caret"></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- *** Duty schedule *** -->
+  <div id="divison-list" class="row">
+    <div class="col-xs-12">
+
+      <div class="panel panel-warning">
+
+        <div class="panel-heading">
+          <h3 class="panel-title">
+            <span class="glyphicon glyphicon-flag"> Intel值班</span>
+          </h3>
+        </div>
+
+        <div class="panel-body">
+          <!-- Side dashboard -->
+          <div class="col-xs-2" style="background-color: #F6F4F0;">
+            <h4 style="margin-top: 25px">当月统计</h4>
+            <div class="fcbox">
+              <ul id="statisticsList" style="padding-inline-start: 10px">
+              </ul>
+            </div>
+            <h4>人员名单</h4>
+            <div id="staffList">
+            </div>
+            <div>&nbsp;</div>
+          </div>
+          <!-- Main calendar -->
+          <div id="calendar" class="col-xs-10"></div>
+          <!-- Bottom Button -->
+          <button id="oneKeyDutySwitch" type="button" class="btn btn-warning btn-md submit-btn col-md-2" style="float: right; margin-right: 16px;">
+            一键排班
+          </button>
+          <button type="button" class="btn btn-danger btn-md submit-btn col-md-2" style="float: right; margin-right: 16px;"
+            @click="submitForms">
+            保存修改
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- *** Modal *** -->
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+            &times;
+          </button>
+          <h4 class="modal-title" id="myModalLabel">
+            事件编辑
+          </h4>
+        </div>
+        <div class="modal-body">
+          是否要删除这条？
+          <p id="selectedName"></p>
+          <p id="selectedDate"></p>
+          <input id="selectedEventId" type="hidden" name="selectedEventId">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">
+            取消
+          </button>
+          <button id="modalDelBtn" type="button" class="btn btn-primary">
+            删除
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+{% endblock %}

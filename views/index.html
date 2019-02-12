@@ -1,0 +1,241 @@
+{% extends "base.html" %} {% block main %}
+
+<!-- *** Template for the modal component *** -->
+<script type="text/x-template" id="modal-template">
+  <transition name="modal">
+    <div class="modal-mask">
+      <div class="modal-wrapper">
+        <div class="modal-container">
+          <div class="modal-header">
+            <slot name="header"></slot>
+          </div>
+          <div class="modal-body">
+            <slot name="body">确定要删除当前周报吗？</slot>
+          </div>
+          <div class="modal-footer">
+            <slot name="footer">
+              <button class="modal-default-button btn-default div-magin-lr" @click="$emit('close')">取消吧</button>
+              <button class="modal-default-button btn-danger div-magin-lr" @click="confirmdel">好的呢</button>
+            </slot>
+          </div>
+        </div>
+      </div>
+    </div>
+  </transition>
+</script>
+
+<!-- *** Vue Data, Methods *** -->
+<script>
+  // * Nav Focus Change
+  $(function () {
+    $(".nav li").filter(".active").removeClass("active")
+    $("#nav1").addClass("active")
+    $("[data-toggle='tooltip']").tooltip()
+  })
+  // * Register Modal Component
+  Vue.component('modal', {
+    template: '#modal-template',
+    methods: {
+      confirmdel() {
+        // QUESTION - 虽说官网称不应当由子组件调用父组件方法，可父组件怎样都接收不到emit怎么破...
+        // this.$emit('delwk'),
+        this.$parent.deleteWeekly(targetId)
+        this.$emit('close')
+      }
+    }
+  })
+  // * Start Index Vm's Control
+  $(function () {
+    var vm = new Vue({
+      el: '#weekly-list',
+      data: {
+        yearNow: 0,
+        years: [],
+        wkListsOrigin: [],
+        wkLists: [],
+        targetId: '',
+        showModalDetele: false
+      },
+      methods: {
+        changeYear: function (chosenYear) {
+          vm.yearNow = chosenYear
+          vm.filterYears()
+          return
+        },
+        filterYears: function () {
+          vm.wkLists = []
+          for (var i in vm.wkListsOrigin) {
+            if (vm.wkListsOrigin[i].year == vm.yearNow) {
+              vm.wkLists.push(vm.wkListsOrigin[i])
+            }
+          }
+          return
+        },
+        setTargetId: function (id) {
+          targetId = id
+          return
+        },
+        showWeekly: function (wkid) {
+          location.href = "/weekly/:" + wkid
+        },
+        editWeekly: function (wkid) {
+          location.href = "/edit?wkid=" + wkid
+        },
+        deleteWeekly: function (id) {
+          var that = this
+          $.ajax({
+            type: 'DELETE',
+            dataType: 'json',
+            url: '/api/wklist/' + id
+          }).done(function (r) {
+            console.log(`Web确认: ${r}, 删除${id}操作请求已执行完成!`)
+            for (var i in that.wkListsOrigin) {
+              if (that.wkListsOrigin[i].id === id) {
+                that.wkListsOrigin.splice(i, 1)
+                that.filterYears()
+                return
+              }
+            }
+          }).fail(function (jqXHR, textStatus) {
+            // 非200成功的情况下返回警告:
+            alert('Error: ' + jqXHR.status)
+          })
+        },
+        sortWklist: function (func) {
+          return this.wkLists.sort(func)
+        },
+        sortWkByUpdateAsc: function (a, b) {
+          console.log("已按修改时间升序排序")
+          return a.updatedAt - b.updatedAt
+        },
+        sortWkByUpdateDsc: function (a, b) {
+          console.log("已按修改时间降序排序")
+          return b.updatedAt - a.updatedAt
+        },
+        sortWkByWeekAsc: function (a, b) {
+          console.log("已按周数升序排序")
+          return parseInt(a.week) - parseInt(b.week)
+        },
+        sortWkByWeekDsc: function (a, b) {
+          console.log("已按周数降序排序")
+          return parseInt(b.week) - parseInt(a.week)
+        }
+      }
+    })
+    // * Page Default Functions 页面加载默认方法
+    // PDF01 - API请求读取全部weekly条目
+    // PDF02 - 年份数组赋值、过滤并显示
+    $.getJSON('/api/wklists').done(function (data) {
+      var tempWkList = []
+      var tempYears = []
+      tempWkList = data.wkLists
+      vm.wkListsOrigin = tempWkList
+      for (var i in tempWkList) {
+        tempYears.push(tempWkList[i].year)
+      }
+      tempYears = Array.from(new Set(tempYears))
+      vm.years = tempYears.sort((a, b) => {
+        return b - a
+      })
+      vm.yearNow = vm.years[0]
+      vm.filterYears()
+    }).fail(function (jqXHR, textStatus) {
+      alert('Error: ' + jqXHR.status)
+    })
+  })
+</script>
+
+<!-- *** Html Views *** -->
+<div class="container" id="weekly-list">
+  <!-- yearsPicker & 3 btns Area -->
+  <div class="row div-blank-bottom">
+    <div class="col-xs-4">
+      <div class="btn-group">
+        <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          当前年份: {% raw %}{{ yearNow }}{% endraw %}
+          <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+          <li v-for="y in years">
+            <a href="#" @click="changeYear(y)" v-text="y"></a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="col-xs-8 div-float-right">
+      <a type="button" class="btn btn-success btn-sm div-float-right" href="/establish">
+        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增
+      </a>
+      <!-- <button type="button" class="btn btn-default btn-sm div-float-right div-magin-lr">
+        <span class="glyphicon glyphicon-search" aria-hidden="true"></span> 查找
+      </button> -->
+      <div class="btn-group div-float-right">
+        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          排序
+          <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+          <li>
+            <a href="#" @click="sortWklist(sortWkByWeekDsc)">按最近一周</a>
+          </li>
+          <li>
+            <a href="#" @click="sortWklist(sortWkByWeekAsc)">按最早一周</a>
+          </li>
+          <li>
+            <a href="#" @click="sortWklist(sortWkByUpdateDsc)">按修改时间最新</a>
+          </li>
+          <li>
+            <a href="#" @click="sortWklist(sortWkByUpdateAsc)">按修改时间最旧</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <!-- Weekly List Area -->
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="panel panel-info">
+        <div class="panel-heading">
+          <h3 class="panel-title">
+            <span class="glyphicon glyphicon-list-alt"> 周报列表</span>
+          </h3>
+        </div>
+        <div class="panel-body">
+          <div class="list-group pre-scrollable index-list-constrain">
+            <modal v-if="showModalDetele" @open="showModalDetele = true" @close="showModalDetele = false">
+              <h3 slot="header">确认么？</h3>
+            </modal>
+            <table class="table table-striped table-hover">
+              <thead>
+                <tr>
+                  <th>年份</th>
+                  <th style="text-align: center">周报名称</th>
+                  <th style="text-align: center">编辑时间</th>
+                  <th style="text-align: right">操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="p in wkLists">
+                  <td v-text="p.year"></td>
+                  <td class="cursor-pointer" style="text-align: center" v-text="p.weekStr" @click="showWeekly(p.id)"></td>
+                  <td style="text-align: center" v-text="p.updatedAtStr"></td>
+                  <td>
+                    <button type="button" class="btn btn-warning btn-xs div-float-right div-magin-lr" @click="editWeekly(p.id)">
+                      编辑
+                    </button>
+                    <button id="show-modal-detele" type="button" class="btn btn-danger btn-xs div-float-right div-magin-lr" @click="setTargetId(p.id), showModalDetele = true">
+                      删除
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}

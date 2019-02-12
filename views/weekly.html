@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Our Duty Weekly System.">
+  <meta name="author" content="Peaceminds">
+  <title>Welcome back, commander.</title>
+  <link rel="shortcut icon" href="/static/favicon.ico" />
+  <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/static/css/project.css" rel="stylesheet">
+  <link href="/static/css/signin.css" rel="stylesheet">
+  <link href="/static/css/bootstrap-switch.min.css" rel="stylesheet">
+  <link rel="icon" href="/static/favicon.ico">
+  <script src="/static/js/jquery.min.js"></script>
+  <script src="/static/js/bootstrap.js"></script>
+  <script src="/static/js/bootstrap-switch.js"></script>
+  <script src="/static/js/vue.js"></script>
+</head>
+
+<body class="bgd-weekly">
+
+  <script>
+    // bootstrap-switch.
+    $(function () {
+      $(".checkbox").bootstrapSwitch({
+        onText: "显",      // 设置ON文本  
+        offText: "关",     // 设置OFF文本  
+        onColor: "success",  // 设置ON文本颜色 (info/success/warning/danger/primary)  
+        offColor: "danger",  // 设置OFF文本颜色 (info/success/warning/danger/primary)  
+        size: "mini",  // 设置控件大小,从小到大 (mini/small/normal/large)  
+        handleWidth: "22",   //设置控件宽度
+        onSwitchChange: function (event, state) { // 当开关状态改变时触发  
+          var ProductId = event.target.defaultValue;
+          if (state == true) {
+            $("#heavyDutyTitle").show()
+            $("#heavyDutyContent").show()
+          } else {
+            $("#heavyDutyTitle").hide()
+            $("#heavyDutyContent").hide()
+          }
+        }
+      });
+    });
+  </script>
+
+  <script>
+
+    // * Vue instance.
+    $(function () {
+      var vm = new Vue({
+        el: '#weekly-show',
+        data: {
+          wkId: '',
+          wkYear: '',
+          wkWeek: '',
+          wkGeneral: '',
+          wkIntelSysSum: '',
+          wkIntelCases: [],
+          wkLinkSysSum: '',
+          wkSecSum: '',
+          wkDutyCheckSum: '',
+          wkHeavyDutySum: '',
+          wkHeavyDutyJudge: ''
+        },
+        methods: {
+          setwkId: function () {
+            this.wkId = getCaption(window.location.pathname)
+          }
+        }
+      })
+      window.vm = vm
+    })
+
+    // * Page Default Functions
+    // PDF01 - 读取GET路径中的wkid字符串 格式化截取
+    var wkId = getCaption(window.location.pathname)
+    function getCaption(obj) {
+      var index = obj.lastIndexOf(":")
+      obj = obj.substring(index + 1, obj.length)
+      return obj
+    }
+    // PDF02 - API请求 从weekly表中GET wkid对应case以外的所有数据
+    $.getJSON('/api/weekly/:' + wkId).done(function (data) {
+      var tmp = data.wkDetails[0]
+      vm.wkId = wkId
+      vm.wkYear = tmp.year
+      vm.wkWeek = tmp.week
+      vm.wkGeneral = tmp.wkGeneral
+      vm.wkIntelSysSum = tmp.wkIntelSysSummary
+      vm.wkLinkSysSum = tmp.wkLinkSysSummary
+      // 格式化输出Sec DutyCheck等信息 给分号和冒号后添加回车换行
+      vm.wkSecSum = replaceSemicolonByReturn(tmp.wkSecSummary)
+      var str1 = replaceSemicolonByReturn(tmp.wkDutyCheckSummary)
+      vm.wkDutyCheckSum = replaceColonByReturn(str1)
+      // 判断wkHeavyDutySum是否为空 为空则不显示相应标签
+      var str2 = tmp.wkHeavyDutySummary
+      if (str2 !== '' && str2 !== null && str2.length !== 0) {
+        vm.wkHeavyDutyJudge = true
+        vm.wkHeavyDutySum = replaceSemicolonByReturn(str2)
+      } else {
+        vm.wkHeavyDutyJudge = false
+        vm.wkHeavyDutySum = ''
+      }
+    }).fail(function (jqXHR, textStatus) {
+      alert('Get weekly error: ' + jqXHR.status)
+    })
+    // PDF03 - API请求 从cases表中GET wkid对应所有事件
+    $.getJSON('/api/cases/:' + wkId).done(function (data) {
+      var cssArr = []
+      var casesStr = JSON.stringify(data)
+      console.log(`接收到的Case数据为：${casesStr}`)
+      // 读取所有cs事件并格式化
+      cssArr = data.wkCases
+      for (var i in cssArr) {
+        vm.wkIntelCases.push(
+          strReduce(cssArr[i].year, cssArr[i].period11) + ' 至 ' +
+          strReduce(cssArr[i].year, cssArr[i].period12) +
+          strReduce(cssArr[i].year, ifPeriod(cssArr[i].period21, cssArr[i].period22)) +
+          strReduce(cssArr[i].year, ifPeriod(cssArr[i].period31, cssArr[i].period32)) + '，' +
+          cssArr[i].warZone + cssArr[i].branchSysName + ' 发生中断。原因为：' +
+          cssArr[i].caseDescription + '。'
+        )
+      }
+      function ifPeriod(p1, p2) {
+        if (p1 !== null && p2 !== null) {
+          return '，' + p1 + ' 至 ' + p2
+        } else return ' '
+      }
+      function strReduce(yearStr, periodStr) {
+        replaceStr = yearStr + '-'
+        return periodStr = periodStr.replace(replaceStr, '')
+      }
+    }).fail(function (jqXHR, textStatus) {
+      alert('Get cases error: ' + jqXHR.status)
+    })
+
+    function replaceSemicolonByReturn(str) {
+      var reg = /[;；]/g
+      var s = str.replace(reg, "；</br>")
+      return s
+    }
+
+    function replaceColonByReturn(str) {
+      var reg = /[:：]/g
+      var s = str.replace(reg, "：</br>")
+      return s
+    }
+
+  </script>
+
+  <!-- Top Header Nav -->
+  <header>
+    <nav class="navbar navbar-inverse navbar-static-top" style="opacity: 0.3;">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+            aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">为您导航</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">weSYS</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse" aria-expanded="false" style="height: 1px;">
+          <ul class="nav navbar-nav">
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <!-- Bootstrap switch -->
+            <li style="margin-top: 14px; margin-left: 14px;">
+              <input type="checkbox" checked class="checkbox" value="hehe" />
+            </li>
+            <!-- Sign out button -->
+            <li>
+              <a href="/signout">Sign Out</a>
+            </li>
+          </ul>
+        </div>
+        
+      </div>
+      
+    </nav>
+  </header>
+
+  <!-- Weekly Detals Show -->
+  <div id="weekly-show" class="container">
+    <h1 class="text-center weekly-title1">{% raw %} {{ wkYear }}年第{{ wkWeek }}周交班报告 {% endraw %}</h1>
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="panel panel-default" style="background-color: rgba(168,168,168,0.3); border: 0px">
+          <div class="panel-body">
+            <h2 class="text-title-left-space weekly-title2">系统总体情况</h2>
+            <div class="jumbotron">
+              <h3 v-text="wkGeneral">...</h3>
+            </div>
+            <h2 class="text-title-left-space weekly-title2">Intel系统运行情况</h2>
+            <div class="jumbotron">
+              <h3 v-text="wkIntelSysSum">...</h3>
+              <ul v-for="str in wkIntelCases">
+                <li v-text="str" style="font-size: 22px"></li>
+              </ul>
+            </div>
+            <h2 class="text-title-left-space weekly-title2">L系统运行情况</h2>
+            <div class="jumbotron">
+              <h3 v-text="wkLinkSysSum">...</h3>
+            </div>
+            <h2 class="text-title-left-space weekly-title2">secSYS系统运行情况</h2>
+            <div class="jumbotron">
+              <h3 v-text="wkSecSum">...</h3>
+            </div>
+            <h2 class="text-title-left-space weekly-title2">值勤检测情况</h2>
+            <div class="jumbotron">
+              <h3 v-html="wkDutyCheckSum">...</h3>
+            </div>
+            <h3 id="heavyDutyTitle" class="text-title-left-space weekly-title2" v-if="wkHeavyDutyJudge">其他情况</h3>
+            <div id="heavyDutyContent" class="jumbotron" v-if="wkHeavyDutyJudge">
+              <p v-text="wkHeavyDutySum">...</p>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Weekly Footer -->
+  <div class="weekly-foot">
+    <div class="inner">
+      <a>weSYS Created by @思想先進元素</a>
+      <a>2018 all rights reserved.</a>
+      <a>&nbsp;</a>
+    </div>
+  </div>
+
+</body>
+
+</html>

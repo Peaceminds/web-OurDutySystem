@@ -1,0 +1,183 @@
+.body_bottom{
+  padding-bottom: 0px;
+}
+.div-blank-bottom {
+    margin-bottom: 20px;
+}
+.div-blank-bottom-lg {
+    margin-bottom: 30px;
+}
+.div-blank-upabt {
+    margin-top: 5px;
+}
+.div-blank-upabt-lg {
+    margin-top: 60px;
+}
+.div-float-right {
+    float: right;
+}
+.div-magin-lr {
+    margin-left: 1px;
+    margin-right: 1px;
+}
+.text-center {
+    text-align: center;
+}
+.text-left {
+    text-align: left;
+}
+.text-title-left-space {
+    margin-left: 5px;
+}
+.weekly-title1 {
+    margin-top: 90px;
+    margin-bottom: 30px;
+    color: rgba(96, 96, 96, 1);
+}
+.edit-title1 {
+    margin-top: 40px;
+    margin-bottom: 30px;
+    color: rgba(66, 66, 66, 1);
+}
+.edit-title2 {
+    margin-top: 60px;
+    margin-bottom: 30px;
+    color: rgba(66, 66, 66, 1);
+}
+.table-ninjia>tbody>tr>th{
+    border-top:0px;
+}
+.weekly-foot {
+    color: #999; /* IE8 proofing */
+    color: rgba(255,255,255,.5);
+    text-align: center;
+    bottom: 10;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    width: 100%;
+}
+.form-control {
+    resize: none;
+}
+.index-list-constrain {
+    max-height: 600px;
+    min-height: 450px;
+}
+
+.text-title {
+    font-size: 18px;
+    vertical-align: top;
+}
+@media (min-width: 768px) {
+    .text-title {
+        font-size: 22px;
+    }
+}
+@media (min-width: 991px) {
+    .text-title {
+        font-size: 28px;
+    }
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.bgd-weekly {
+    background:url(/static/pic/bk_weekly.jpg) no-repeat center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    -webkit-background-size: cover;
+    -o-background-size: cover;
+    -moz-background-size: cover;
+    -ms-background-size: cover;
+  }
+
+.tree-box {
+    font-family: "Helvetica Neue", Arial;
+    margin-top: 30px;
+    margin-bottom: 2px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    background-color: rgba(166,166,166,0.1);
+    max-height:500px;
+    overflow:scroll;
+}
+.date-box {
+    margin-top: 25px;
+    margin-bottom: 2px;
+    padding-top: 10px;
+}
+.submit-btn {
+    margin-top: 10px; 
+    float: right;
+}
+
+.modal-mask {
+  position: fixed;
+  z-index: 9998;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, .5);
+  display: table;
+  transition: opacity .3s ease;
+}
+
+.modal-wrapper {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.modal-container {
+  width: 300px;
+  margin: 0px auto;
+  padding: 20px 30px;
+  background-color: #fff;
+  border-radius: 2px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
+  transition: all .3s ease;
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+.modal-header h3 {
+  margin-top: 0;
+  color: #42b983;
+}
+
+.modal-body {
+  margin: 20px 0;
+}
+
+.modal-default-button {
+  float: right;
+}
+
+/*
+ * The following styles are auto-applied to elements with
+ * transition="modal" when their visibility is toggled
+ * by Vue.js.
+ *
+ * You can easily play with the modal transition by editing
+ * these styles.
+ */
+
+.modal-enter {
+  opacity: 0;
+}
+
+.modal-leave-active {
+  opacity: 0;
+}
+
+.modal-enter .modal-container,
+.modal-leave-active .modal-container {
+  -webkit-transform: scale(1.1);
+  transform: scale(1.1);
+}
+
+.fcbox {
+    margin: 10px;
+    padding: 5px;
+}

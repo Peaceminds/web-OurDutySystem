@@ -1,0 +1,62 @@
+.bgd-signin {
+  background:url(/static/pic/bk_siginin.jpg) no-repeat center;
+  background-position: center 0;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+  -webkit-background-size: cover;
+  -o-background-size: cover;
+  -moz-background-size: cover;
+  -ms-background-size: cover;
+}
+.title-sigin-form {
+  color: rgba(255, 255, 255, 1);
+}
+.form-signin {
+  background-color: rgba(0, 0, 0, 0.2);
+  max-width: 350px;
+  padding-top: 5px;
+  padding-left: 35px;
+  padding-right: 35px;
+  padding-bottom: 35px;
+  margin: 0 auto;
+  margin-top: 40px;
+}
+.form-signin .form-signin-heading,
+.form-signin .checkbox {
+  margin-bottom: 10px;
+}
+.form-signin .checkbox {
+  font-weight: normal;
+}
+.form-signin .form-control {
+  position: relative;
+  height: auto;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  padding: 10px;
+  font-size: 16px;
+}
+.form-signin .form-control:focus {
+  z-index: 2;
+}
+.form-signin input[type="email"] {
+  margin-bottom: -1px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.form-signin input[type="password"] {
+  margin-bottom: 10px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.mastfoot {
+  color: #999; /* IE8 proofing */
+  color: rgba(255,255,255,.5);
+  text-align: center;
+  bottom: 10;
+  margin-top: 10%;
+  width: 100%;
+}
