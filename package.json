@@ -28,7 +28,7 @@
         "mz": "2.4.0",
         "npm": "^6.3.0",
         "nunjucks": "2.4.2",
-        "sequelize": "3.24.1",
+        "sequelize": "5.15.1",
         "standard": "^11.0.1",
         "vue": "^2.5.16",
         "vue-axios": "^2.1.2",
